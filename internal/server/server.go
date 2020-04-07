@@ -22,17 +22,18 @@ type handlerGetKey struct {
 
 func (h handlerGetKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	k := mux.Vars(r)[getKeyParam]
+	log.Info().Msgf("key: %v / params: %v", k, mux.Vars(r))
 	reader, err := h.provider.Provide(k)
 	if err != nil {
 		if errors.Is(err, provider.ErrKeyNotFound) {
 			http.NotFound(w, r)
 			return
 		}
-		http.Error(w, "", 503)
+		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 	defer reader.Close()
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 	io.Copy(w, reader)
 }
 

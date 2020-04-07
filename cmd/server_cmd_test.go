@@ -56,5 +56,4 @@ func TestSetLoggingLevel(t *testing.T) {
 			assert.Equal(t, tc.expSuccess, err == nil)
 		})
 	}
-
 }
