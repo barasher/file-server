@@ -2,30 +2,77 @@ package provider
 
 import (
 	"errors"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
+	"os"
+	"strings"
 	"testing"
 )
 
-func TestProvideUnknownKey(t *testing.T) {
-	conf := LocalConf{Folder:"../../testdata/local"}
+func createProvider(t *testing.T, f string) Provider {
+	conf := LocalConf{Folder: "../../testdata/local"}
 	prov, err := NewLocalProvider(conf)
 	assert.Nil(t, err)
+	return prov
+}
+
+func checkKeyValue(t *testing.T, p Provider, k string, v string) {
+	r, err := p.Get(k)
+	assert.Nil(t, err)
+	defer r.Close()
+	b, err := ioutil.ReadAll(r)
+	assert.Nil(t, err)
+	assert.Equal(t, v, string(b))
+}
+
+func TestGetUnknownKey(t *testing.T) {
+	prov := createProvider(t, "../../testdata/local")
 	defer prov.Close()
-	_, err = prov.Provide("unknown")
+
+	_, err := prov.Get("unknown")
 	assert.NotNil(t, err)
 	assert.True(t, errors.Is(err, ErrKeyNotFound))
 }
 
-func TestProvideNominal(t *testing.T) {
-	conf := LocalConf{Folder:"../../testdata/local"}
-	prov, err := NewLocalProvider(conf)
-	assert.Nil(t, err)
+func TestGetNominal(t *testing.T) {
+	prov := createProvider(t, "../../testdata/local")
 	defer prov.Close()
-	reader, err := prov.Provide("file.txt")
+	checkKeyValue(t, prov, "file.txt", "file content")
+}
+
+func TestSetNewKey(t *testing.T) {
+	k := "blabla.txt"
+	v := "blabla"
+	defer func() {
+		os.Remove(fmt.Sprintf("../../testdata/local/%v", k))
+	}()
+	prov := createProvider(t, "../../testdata/local")
+	defer prov.Close()
+
+	r := strings.NewReader(v)
+	err := prov.Set(k, r)
 	assert.Nil(t, err)
-	defer reader.Close()
-	b, err := ioutil.ReadAll(reader)
-	assert.Nil(t, err)
-	assert.Equal(t, "file content", string(b))
+
+	checkKeyValue(t, prov, k, v)
+}
+
+func TestSetExistingKey(t *testing.T) {
+	k := "blabla.txt"
+	v := "blabla"
+	v2 := "blublu"
+	defer func() {
+		os.Remove(fmt.Sprintf("../../testdata/local/%v", k))
+	}()
+	prov := createProvider(t, "../../testdata/local")
+	defer prov.Close()
+
+	r := strings.NewReader(v)
+	assert.Nil(t, prov.Set(k, r))
+
+	r = strings.NewReader(v2)
+	assert.Nil(t, prov.Set(k, r))
+
+	checkKeyValue(t, prov, k, v2)
+
 }

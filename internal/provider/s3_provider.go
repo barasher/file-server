@@ -4,6 +4,7 @@ package provider
 // https://medium.com/@alexsante/serving-up-videos-from-s3-to-the-browser-using-go-974dfc11b738
 
 import (
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"io"
 
@@ -21,7 +22,7 @@ type S3Provider struct {
 	bucket *string
 }
 
-func (p S3Provider) Provide(key string) (io.ReadCloser, error) {
+func (p S3Provider) Get(key string) (io.ReadCloser, error) {
 	obj, err := p.client.GetObject(&s3.GetObjectInput{
 		Bucket: p.bucket,
 		Key:    aws.String(key),
@@ -33,6 +34,10 @@ func (p S3Provider) Provide(key string) (io.ReadCloser, error) {
 		return nil, err
 	}
 	return obj.Body, nil
+}
+
+func (p S3Provider) Set(key string, in io.Reader) error {
+	return fmt.Errorf("Not yet implemented")
 }
 
 func (p S3Provider) Close() {

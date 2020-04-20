@@ -6,7 +6,8 @@ import (
 )
 
 type Provider interface {
-	Provide(key string) (io.ReadCloser, error)
+	Get(key string) (io.ReadCloser, error)
+	Set(key string, b io.Reader) error
 	Close()
 }
 

@@ -1,5 +1,7 @@
 package server
 
+// https://dev.to/jinagamvasubabu/how-to-post-multipart-form-data-in-go-using-mux-22kp
+
 import (
 	"errors"
 	"fmt"
@@ -23,7 +25,7 @@ type handlerGetKey struct {
 func (h handlerGetKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	k := mux.Vars(r)[getKeyParam]
 	log.Info().Msgf("key: %v / params: %v", k, mux.Vars(r))
-	reader, err := h.provider.Provide(k)
+	reader, err := h.provider.Get(k)
 	if err != nil {
 		if errors.Is(err, provider.ErrKeyNotFound) {
 			http.NotFound(w, r)
@@ -43,7 +45,7 @@ func Run(prov provider.Provider) {
 	// getKey
 	requestDuration := promauto.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name: "s3_http_server_request_duration_seconds",
+			Name: "file_server_request_duration_seconds",
 			Help: "Histogram concerning request durations (seconds)",
 			Buckets:[]float64{.0025, .005, .01, .025, .05, .1},
 			ConstLabels:prometheus.Labels{"method":"GET", "path":"/key/{key}"},

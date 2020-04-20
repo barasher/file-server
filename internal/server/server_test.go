@@ -14,27 +14,29 @@ import (
 )
 
 type fakeProv struct {
-	val string
-	err error
+	valGet string
+	errGet error
+	errSet error
 }
 
-func (f *fakeProv) setProvideResults(val string, err error) {
-	f.val = val
-	f.err = err
+func (f fakeProv) Get(key string) (io.ReadCloser, error) {
+	return ioutil.NopCloser(strings.NewReader(f.valGet)), f.errGet
 }
 
-func (f fakeProv) Provide(key string) (io.ReadCloser, error) {
-	return ioutil.NopCloser(strings.NewReader(f.val)), f.err
+func (f fakeProv) Set(k string, v io.Reader)  error {
+	return f.errSet
 }
 
 func (f fakeProv) Close() {
 
 }
 
-func buildFakeProv(val string, err error) fakeProv{
-	nominalProvider := fakeProv{}
-	nominalProvider.setProvideResults(val, err)
-	return nominalProvider
+func buildFakeProv(valGet string, errGet error, errSet error) fakeProv{
+	return fakeProv{
+		valGet: valGet,
+		errGet: errGet,
+		errSet:errSet,
+	}
 }
 
 func TestHandlerGeyKey(t *testing.T) {
@@ -45,9 +47,9 @@ func TestHandlerGeyKey(t *testing.T) {
 		expStatus int
 		expContent string
 	}{
-		{"nominal", buildFakeProv("file content", nil),"file.txt", http.StatusOK, "file content"},
-		{ "unknown", buildFakeProv("", provider.ErrKeyNotFound),"unknown", http.StatusNotFound, ""},
-		{ "error", buildFakeProv("", fmt.Errorf("error")),"unknown", http.StatusInternalServerError, ""},
+		{"nominal", buildFakeProv("file content", nil, nil),"file.txt", http.StatusOK, "file content"},
+		{ "unknown", buildFakeProv("", provider.ErrKeyNotFound, nil),"unknown", http.StatusNotFound, ""},
+		{ "error", buildFakeProv("", fmt.Errorf("error"), nil),"unknown", http.StatusInternalServerError, ""},
 	}
 
 	conf := provider.LocalConf{ 		Folder: "../../testdata/local"	}
