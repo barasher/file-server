@@ -5,41 +5,13 @@ import (
 	"github.com/barasher/file-server/internal/provider"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 )
 
-type fakeProv struct {
-	valGet string
-	errGet error
-	errSet error
-}
-
-func (f fakeProv) Get(key string) (io.ReadCloser, error) {
-	return ioutil.NopCloser(strings.NewReader(f.valGet)), f.errGet
-}
-
-func (f fakeProv) Set(k string, v io.Reader)  error {
-	return f.errSet
-}
-
-func (f fakeProv) Close() {
-
-}
-
-func buildFakeProv(valGet string, errGet error, errSet error) fakeProv{
-	return fakeProv{
-		valGet: valGet,
-		errGet: errGet,
-		errSet:errSet,
-	}
-}
-
-func TestHandlerGeyKey(t *testing.T) {
+func TestGetHandler(t *testing.T) {
 	var tcs = []struct {
 		tcID   string
 		preProv provider.Provider
@@ -52,16 +24,9 @@ func TestHandlerGeyKey(t *testing.T) {
 		{ "error", buildFakeProv("", fmt.Errorf("error"), nil),"unknown", http.StatusInternalServerError, ""},
 	}
 
-	conf := provider.LocalConf{ 		Folder: "../../testdata/local"	}
-	prov, err := provider.NewLocalProvider(conf)
-	assert.Nil(t, err)
-	defer prov.Close()
-
-
-
 	for _, tc := range tcs {
 		t.Run(tc.tcID, func(t *testing.T) {
-			handler := handlerGetKey{tc.preProv}
+			handler := handlerGet{tc.preProv}
 			path := fmt.Sprintf("/key/%s", tc.inKey)
 			req, err := http.NewRequest("GET", path, nil)
 			if err != nil {
