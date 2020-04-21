@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -15,15 +14,6 @@ func createProvider(t *testing.T, f string) Provider {
 	prov, err := NewLocalProvider(conf)
 	assert.Nil(t, err)
 	return prov
-}
-
-func checkKeyValue(t *testing.T, p Provider, k string, v string) {
-	r, err := p.Get(k)
-	assert.Nil(t, err)
-	defer r.Close()
-	b, err := ioutil.ReadAll(r)
-	assert.Nil(t, err)
-	assert.Equal(t, v, string(b))
 }
 
 func TestGetUnknownKey(t *testing.T) {
@@ -74,5 +64,4 @@ func TestSetExistingKey(t *testing.T) {
 	assert.Nil(t, prov.Set(k, r))
 
 	checkKeyValue(t, prov, k, v2)
-
 }

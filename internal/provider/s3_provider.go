@@ -4,21 +4,20 @@ package provider
 // https://medium.com/@alexsante/serving-up-videos-from-s3-to-the-browser-using-go-974dfc11b738
 
 import (
-	"fmt"
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"io"
-
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"io"
 )
 
 const defaultRegion = "us-east-1"
 
 type S3Provider struct {
-	client *s3.S3
-	session *session.Session
+	client s3iface.S3API
 	bucket *string
 }
 
@@ -28,7 +27,7 @@ func (p S3Provider) Get(key string) (io.ReadCloser, error) {
 		Key:    aws.String(key),
 	})
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok &&  aerr.Code() == s3.ErrCodeNoSuchKey {
+		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == s3.ErrCodeNoSuchKey {
 			return nil, ErrKeyNotFound
 		}
 		return nil, err
@@ -36,8 +35,25 @@ func (p S3Provider) Get(key string) (io.ReadCloser, error) {
 	return obj.Body, nil
 }
 
-func (p S3Provider) Set(key string, in io.Reader) error {
-	return fmt.Errorf("Not yet implemented")
+func (p S3Provider) Set(k string, r io.Reader) error {
+	uploader := s3manager.NewUploaderWithClient(p.client)
+	return p.set(uploader, k, r)
+}
+
+type uploadInterface interface {
+	Upload(input *s3manager.UploadInput, options ...func(uploader *s3manager.Uploader)) (*s3manager.UploadOutput, error)
+}
+
+func (p S3Provider) set(u uploadInterface, k string, r io.Reader) error {
+	uploadInput := &s3manager.UploadInput{
+		Body:                      r,
+		Bucket:                    p.bucket,
+		ContentMD5:                nil,
+		ContentType:               nil,
+		Key:                       aws.String(k),
+	}
+	_, err := u.Upload(uploadInput)
+	return err
 }
 
 func (p S3Provider) Close() {
@@ -57,8 +73,7 @@ func NewS3Provider(conf S3Conf) (S3Provider, error) {
 	if err != nil {
 		return prov, err
 	}
-	prov.session = newSession
-	prov.client = s3.New(newSession)
+	prov.client = s3iface.S3API(s3.New(newSession))
 	prov.bucket = aws.String(conf.Bucket)
 	return prov, nil
 }
@@ -67,5 +82,5 @@ type S3Conf struct {
 	AccessId     string
 	AccessSecret string
 	Bucket       string
-	URL string
+	URL          string
 }
