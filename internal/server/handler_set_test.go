@@ -16,10 +16,12 @@ func TestSetHandler(t *testing.T) {
 	var tcs = []struct {
 		tcID       string
 		preProv    provider.Provider
+		inField string
 		expStatus  int
 	}{
-		{"nominal", buildFakeProv("",nil, nil),  http.StatusNoContent},
-		{"error", buildFakeProv("", nil, fmt.Errorf("error")), http.StatusInternalServerError},
+		{"nominal", buildFakeProv("",nil, nil),  "file",http.StatusNoContent},
+		{"error", buildFakeProv("", nil, fmt.Errorf("error")), "file", http.StatusInternalServerError},
+		{"wrongField", buildFakeProv("",nil, nil),  "wrongField",http.StatusInternalServerError},
 	}
 
 	for _, tc := range tcs {
@@ -29,7 +31,7 @@ func TestSetHandler(t *testing.T) {
 
 			body := new(bytes.Buffer)
 			mpart := multipart.NewWriter(body)
-			part, err := mpart.CreateFormFile("file", "blabla.txt")
+			part, err := mpart.CreateFormFile(tc.inField, "blabla.txt")
 			assert.Nil(t, err)
 			_, err = part.Write([]byte("upload"))
 			assert.Nil(t, err)
