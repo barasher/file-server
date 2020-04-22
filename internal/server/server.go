@@ -39,11 +39,6 @@ func (s *Server) Run() {
 	}
 	log.Info().Msg("Server running...")
 	srv.ListenAndServe();
-	// TODO graceful stop
-}
-
-func (s *Server) Close() {
-	s.prov.Close()
 }
 
 func NewServer(c internal.ServerConf) (Server, error) {

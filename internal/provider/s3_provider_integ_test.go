@@ -47,7 +47,6 @@ func TestNewS3Provider_LifeCycle(t *testing.T) {
 	}
 	prov, err := NewS3Provider(c)
 	assert.Nil(t, err)
-	defer prov.Close()
 
 	err = prov.Set("k", strings.NewReader("content"))
 	assert.Nil(t, err)

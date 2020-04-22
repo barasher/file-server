@@ -48,7 +48,3 @@ func (p LocalProvider) Set(key string, in io.Reader) error {
 	}
 	return nil
 }
-
-func (p LocalProvider) Close() {
-	// Nothing
-}

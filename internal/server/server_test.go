@@ -45,12 +45,8 @@ func TestNewServer_ProvType(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.tcID, func(t *testing.T) {
-			p, err := NewServer(tc.inConf)
+			_, err := NewServer(tc.inConf)
 			assert.Equal(t, err == nil, tc.expSuccess)
-			t.Logf("%v", err)
-			if err == nil {
-				p.Close()
-			}
 		})
 	}
 }
@@ -64,7 +60,6 @@ func TestNewServer_Mux(t *testing.T) {
 	}
 	s, err := NewServer(c)
 	assert.Nil(t, err)
-	defer s.Close()
 
 	// get
 	req, err := http.NewRequest("GET", "/key/file.txt", nil)

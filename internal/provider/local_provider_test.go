@@ -18,7 +18,6 @@ func createProvider(t *testing.T, f string) Provider {
 
 func TestGetUnknownKey(t *testing.T) {
 	prov := createProvider(t, "../../testdata/local")
-	defer prov.Close()
 
 	_, err := prov.Get("unknown")
 	assert.NotNil(t, err)
@@ -27,7 +26,6 @@ func TestGetUnknownKey(t *testing.T) {
 
 func TestGetNominal(t *testing.T) {
 	prov := createProvider(t, "../../testdata/local")
-	defer prov.Close()
 	checkKeyValue(t, prov, "file.txt", "file content")
 }
 
@@ -38,7 +36,6 @@ func TestSetNewKey(t *testing.T) {
 		os.Remove(fmt.Sprintf("../../testdata/local/%v", k))
 	}()
 	prov := createProvider(t, "../../testdata/local")
-	defer prov.Close()
 
 	r := strings.NewReader(v)
 	err := prov.Set(k, r)
@@ -55,7 +52,6 @@ func TestSetExistingKey(t *testing.T) {
 		os.Remove(fmt.Sprintf("../../testdata/local/%v", k))
 	}()
 	prov := createProvider(t, "../../testdata/local")
-	defer prov.Close()
 
 	r := strings.NewReader(v)
 	assert.Nil(t, prov.Set(k, r))

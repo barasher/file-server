@@ -23,7 +23,6 @@ func TestGetS3_Error(t *testing.T) {
 	mock.EXPECT().GetObject(gomock.Any()).Return(nil, fmt.Errorf("error")).AnyTimes()
 
 	prov := S3Provider{client: mock}
-	defer prov.Close()
 	_, err := prov.Get("blabla")
 	assert.NotNil(t, err)
 }
@@ -38,7 +37,6 @@ func TestGetS3_Nominal(t *testing.T) {
 	mock.EXPECT().GetObject(gomock.Any()).Return(ret, nil).AnyTimes()
 
 	prov := S3Provider{client: mock}
-	defer prov.Close()
 	checkKeyValue(t, prov, "blabla", "fileContent")
 }
 
@@ -50,7 +48,6 @@ func TestGetS3_UnknownKey(t *testing.T) {
 	mock.EXPECT().GetObject(gomock.Any()).Return(nil, err).AnyTimes()
 
 	prov := S3Provider{client: mock}
-	defer prov.Close()
 	_, err2 := prov.Get("blabla")
 	assert.NotNil(t, err2)
 	assert.True(t, errors.Is(err2, ErrKeyNotFound))

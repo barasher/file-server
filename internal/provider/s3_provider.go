@@ -56,10 +56,6 @@ func (p S3Provider) set(u uploadInterface, k string, r io.Reader) error {
 	return err
 }
 
-func (p S3Provider) Close() {
-	// nothing
-}
-
 func NewS3Provider(conf S3Conf) (S3Provider, error) {
 	prov := S3Provider{}
 	s3Config := &aws.Config{
