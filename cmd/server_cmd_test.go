@@ -6,24 +6,7 @@ import (
 	"testing"
 )
 
-func TestLoadConfFile(t *testing.T) {
-	var tcs = []struct {
-		tcID   string
-		inFile  string
-		expSuccess bool
-	}{
-		{"Unknown", "unkknown.json", false},
-		{"NonParsable", "../testdata/conf/unparsable.json", false},
-		{"Nominal", "../testdata/conf/nominal.json", false},
-	}
 
-	for _, tc := range tcs {
-		t.Run(tc.tcID, func(t *testing.T) {
-			_ , err := loadConfFile(tc.inFile)
-			assert.Equal(t, tc.expSuccess, err == nil)
-		})
-	}
-}
 
 func TestSetLoggingLevel(t *testing.T) {
 	var tcs = []struct {
