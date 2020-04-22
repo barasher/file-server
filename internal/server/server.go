@@ -20,12 +20,18 @@ const logKeyKey = "key"
 type Server struct {
 	router *mux.Router
 	prov   provider.Provider
+	port   uint
 }
 
 func (s *Server) Run() {
-	// TODO spécifier le port
+	p := s.port
+	if p == 0 {
+		p = 8080
+		log.Info().Msgf("Default port will be used (%v)", p)
+	}
+	addr := fmt.Sprintf("0.0.0.0:%v", p)
 	srv := &http.Server{
-		Addr:         "0.0.0.0:8080",
+		Addr:         addr,
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
@@ -42,7 +48,7 @@ func (s *Server) Close() {
 
 func NewServer(c internal.ServerConf) (Server, error) {
 	var err error
-	s := Server{}
+	s := Server{port: c.Port}
 
 	switch c.Type {
 	case internal.S3ProviderID:
