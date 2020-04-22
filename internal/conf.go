@@ -12,7 +12,7 @@ const (
 	LocalProviderID = "local"
 )
 
-type ServerConf struct { // TODO normaliser les balises
+type ServerConf struct {
 	Type         string
 	S3Conf       provider.S3Conf    `json:"S3"`
 	LocalConf    provider.LocalConf `json:"Local"`
