@@ -13,11 +13,11 @@ const (
 )
 
 type ServerConf struct {
-	Type         string
-	S3Conf       provider.S3Conf    `json:"S3"`
-	LocalConf    provider.LocalConf `json:"Local"`
-	LoggingLevel string
-	Port uint
+	Type         string `json:"type"`
+	S3Conf       provider.S3Conf    `json:"s3"`
+	LocalConf    provider.LocalConf `json:"local"`
+	LoggingLevel string `json:"loggingLevel"`
+	Port uint `json:"port"`
 }
 
 func LoadConfFile(path string) (ServerConf, error) {

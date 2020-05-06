@@ -11,6 +11,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog/log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -45,7 +46,7 @@ func NewServer(c internal.ServerConf) (Server, error) {
 	var err error
 	s := Server{port: c.Port}
 
-	switch c.Type {
+	switch strings.ToLower(c.Type) {
 	case internal.S3ProviderID:
 		log.Info().Msg("Provider: S3")
 		if s.prov, err = provider.NewS3Provider(c.S3Conf); err != nil {

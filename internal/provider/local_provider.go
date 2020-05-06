@@ -10,7 +10,7 @@ import (
 )
 
 type LocalConf struct {
-	Folder     string
+	Folder     string `json:"folder"`
 }
 
 type LocalProvider struct {

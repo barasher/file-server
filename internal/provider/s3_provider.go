@@ -75,8 +75,8 @@ func NewS3Provider(conf S3Conf) (S3Provider, error) {
 }
 
 type S3Conf struct {
-	AccessId     string
-	AccessSecret string
-	Bucket       string
-	URL          string
+	AccessId     string `json:"accessId"`
+	AccessSecret string `json:"accessSecret"`
+	Bucket       string `json:"bucket"`
+	URL          string `json:"url"`
 }

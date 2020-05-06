@@ -33,18 +33,18 @@ In the **`file-server`** docker image :
 The configuration file is a JSON file :
 ```json
 {
-  "LoggingLevel" : "debug",
-  "Type": "configurationType",
-  "Port": 8080,
+  "loggingLevel" : "debug",
+  "type": "configurationType",
+  "port": 8080,
   [Storage speficic configuration]
 }
 ```
 
-- `LoggingLevel` defines the logging level : `debug`, `info` (default value), `warn`, `error`, ...
-- `Type` defines which type of storage that must be used. This parameter is **mandatory** and depending on the value, other parameters become also required. Acceptable values are :
+- `loggingLevel` defines the logging level : `debug`, `info` (default value), `warn`, `error`, ...
+- `type` defines which type of storage that must be used. This parameter is **mandatory** and depending on the value, other parameters become also required. Acceptable values are :
   - `s3` to store data in a S3 bucket.
   - `local` to store data in the local filesystem
-- `Port` defines the port where the server will be listening. The default value is `8080`
+- `port` defines the port where the server will be listening. The default value is `8080`
 
 ### Local storage
 
@@ -52,13 +52,13 @@ If the chosen storage type is `local`, then the following block will be required
 ```json
 {
   [...],
-  "Local": {
-    "Folder": "/var/data/file-server"
+  "local": {
+    "folder": "/var/data/file-server"
   }
 }
 ```
 
-- `Folder` defines where files will be stored. This parameter is **mandatory**.
+- `folder` defines where files will be stored. This parameter is **mandatory**.
 
 ### S3 storage
 
@@ -66,19 +66,19 @@ If the chosen storage type is `s3`, then the following block will be required :
 ```json
 {
   [...],
-  "S3": {
-    "AccessId": "myId",
-    "AccessSecret": "mySecret",
-    "Bucket": "myBucket",
-    "URL": "http://1.2.3.4:8080/"
+  "s3": {
+    "accessId": "myId",
+    "accessSecret": "mySecret",
+    "bucket": "myBucket",
+    "url": "http://1.2.3.4:8080/"
   }
 }
 ```
 
-- `AccessId` defines the S3 access id. This parameter is **mandatory**.
-- `AccessSecret` defines the secret for the id. This parameter is **mandatory**.
-- `Bucket` defines the bucket name. This parameter is **mandatory**.
-- `URL` defines the S3 entrypoint. This parameter is **mandatory**.
+- `accessId` defines the S3 access id. This parameter is **mandatory**.
+- `accessSecret` defines the secret for the id. This parameter is **mandatory**.
+- `bucket` defines the bucket name. This parameter is **mandatory**.
+- `url` defines the S3 entrypoint. This parameter is **mandatory**.
 
 ## Exposed services
 
