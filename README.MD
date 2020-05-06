@@ -1,12 +1,15 @@
 # file-server
 
+[![Build Status](https://travis-ci.org/barasher/file-server.svg?branch=master)](https://travis-ci.org/barasher/file-server)
+[![codecov](https://codecov.io/gh/barasher/go-exiftool/branch/master/graph/badge.svg)](https://codecov.io/gh/barasher/go-exiftool)
+
 **`file-server`** is an ultra-simple webservice that exposes files over *http*.
 
 It exposes three services :
 
 - a service that returns stored binaries (~ GET)
-- a **set** service that stores binaries (~ SET)
-- a **metrics** service that exposes... metrics !
+- a service that stores binaries (~ SET)
+- a service that exposes metrics
 
 The unique key for each binary is its filename.
 
@@ -109,7 +112,7 @@ Response :
 
 Path : `/metrics`
 
-Metrics are based on (https://prometheus.io/)[Prometheus] standards :
+Metrics are based on [Prometheus](https://prometheus.io/) standards :
 - `get` operations are monitored as histogram : `file_server_get_request_duration_seconds_bucket`
 - `set` operations are monitored as histogram :  `file_server_set_request_duration_seconds_bucket`
 
