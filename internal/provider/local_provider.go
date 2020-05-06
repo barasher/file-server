@@ -10,15 +10,19 @@ import (
 )
 
 type LocalConf struct {
-	Folder     string `json:"folder"`
+	Folder string `json:"folder"`
 }
 
 type LocalProvider struct {
-	folder	string
+	folder string
 }
 
 func NewLocalProvider(conf LocalConf) (LocalProvider, error) {
-	return LocalProvider{folder:conf.Folder}, nil
+	p := LocalProvider{folder: conf.Folder}
+	if _, err := os.Stat(conf.Folder) ; err != nil {
+		return p, fmt.Errorf("error when checking provided root folder: %w", err)
+	}
+	return p, nil
 }
 
 func (p LocalProvider) Get(key string) (io.ReadCloser, error) {

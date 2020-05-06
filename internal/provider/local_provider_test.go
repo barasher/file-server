@@ -16,6 +16,12 @@ func createProvider(t *testing.T, f string) Provider {
 	return prov
 }
 
+func TestNewLocalProvider_NonExistingRoot(t *testing.T) {
+	c := LocalConf{Folder:"/abcdef"}
+	_, err := NewLocalProvider(c)
+	assert.NotNil(t, err)
+}
+
 func TestGetUnknownKey(t *testing.T) {
 	prov := createProvider(t, "../../testdata/local")
 
