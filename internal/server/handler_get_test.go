@@ -20,7 +20,8 @@ func TestGetHandler(t *testing.T) {
 		expContent string
 	}{
 		{"nominal", buildFakeProv("file content", nil, nil),"file.txt", http.StatusOK, "file content"},
-		{ "unknown", buildFakeProv("", provider.ErrKeyNotFound, nil),"unknown", http.StatusNotFound, ""},
+		{ "keyNotFound", buildFakeProv("", provider.ErrKeyNotFound, nil),"unknown", http.StatusNotFound, ""},
+		{ "chrootError", buildFakeProv("", provider.ErrChroot, nil),"file.txt", http.StatusBadRequest, ""},
 		{ "error", buildFakeProv("", fmt.Errorf("error"), nil),"unknown", http.StatusInternalServerError, ""},
 	}
 

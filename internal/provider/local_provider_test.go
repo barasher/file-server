@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -66,4 +67,23 @@ func TestSetExistingKey(t *testing.T) {
 	assert.Nil(t, prov.Set(k, r))
 
 	checkKeyValue(t, prov, k, v2)
+}
+
+func TestCheckChroot(t *testing.T) {
+	c := LocalConf{Folder:"../../testdata"}
+	a, _ := filepath.Abs(c.Folder)
+	p, err := NewLocalProvider(c)
+	assert.Nil(t, err)
+
+	ret, err :=  p.checkChroot("a.txt")
+	assert.Nil(t, err)
+	assert.Equal(t, filepath.Join(a, "a.txt"), ret)
+
+	ret, err =  p.checkChroot("./a.txt")
+	assert.Nil(t, err)
+	assert.Equal(t, filepath.Join(a, "a.txt"), ret)
+
+	ret, err =  p.checkChroot("../go.mod")
+	t.Logf("ret: %v, err: %v", ret, err)
+	assert.True(t, errors.Is(err, ErrChroot))
 }

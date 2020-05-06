@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"github.com/barasher/file-server/internal/provider"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
@@ -26,6 +27,11 @@ func (h handlerSet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.provider.Set(k, file); err != nil {
 		subLog.Error().Msgf("%v", err)
+		if errors.Is(err, provider.ErrChroot) {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Chroot escalation detected"))
+			return
+		}
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}

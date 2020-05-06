@@ -22,6 +22,7 @@ func TestSetHandler(t *testing.T) {
 		{"nominal", buildFakeProv("",nil, nil),  "file",http.StatusNoContent},
 		{"error", buildFakeProv("", nil, fmt.Errorf("error")), "file", http.StatusInternalServerError},
 		{"wrongField", buildFakeProv("",nil, nil),  "wrongField",http.StatusInternalServerError},
+		{"chrootError", buildFakeProv("",nil, provider.ErrChroot),  "file",http.StatusBadRequest},
 	}
 
 	for _, tc := range tcs {

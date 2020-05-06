@@ -18,8 +18,13 @@ func (h handlerGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Info().Msgf("key: %v / params: %v", k, mux.Vars(r))
 	reader, err := h.provider.Get(k)
 	if err != nil {
-		if errors.Is(err, provider.ErrKeyNotFound) {
+		switch {
+		case errors.Is(err, provider.ErrKeyNotFound):
 			http.NotFound(w, r)
+			return
+		case errors.Is(err, provider.ErrChroot):
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Chroot escalation detected"))
 			return
 		}
 		http.Error(w, "", http.StatusInternalServerError)

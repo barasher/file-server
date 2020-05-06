@@ -11,3 +11,4 @@ type Provider interface {
 }
 
 var ErrKeyNotFound error = fmt.Errorf("Key not found")
+var ErrChroot error = fmt.Errorf("Chroot error")

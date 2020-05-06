@@ -93,6 +93,7 @@ Request :
 Response :
 - Main HTTP status codes :
   - 204 : OK
+  - 400 : Bad request (check body for details) 
   - 500 : Server error
 
 ### Get a binary
@@ -104,6 +105,7 @@ Request :
 Response :
 - Main HTTP status codes :
   - 200 : OK
+  - 400 : Bad request (check body for details) 
   - 404 : Unknown key
   - 500 : Server error
 - Body : file content
